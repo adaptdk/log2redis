@@ -28,4 +28,7 @@ Lastly you should set a unique identifier for your solution, notice you might ne
 ```
 // Could be your solutions profile name, shorthand for domain or something similar
 $conf['log2redis_log_identifier'] = 'yoursolutionsidentifier';
+
+// Tags start array, which can contain stuff like which environment your logging from etc. (defaults to empty array)
+$conf['log2redis_tags'] = array('production');
 ```

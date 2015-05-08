@@ -21,11 +21,12 @@ function log2redis_watchdog(array $entry) {
 
   $entry['identifier'] = variable_get('log2redis_log_identifier', 'drupal');
 
-  $entry['tags'] = [];
+  $entry['tags'] = variable_get('log2redis_tags', array());
+
   $entry['tags'][] = $entry['type'];
+  unset($entry['type']);
   $entry['tags'][] = drupal_html_class($entry['type']);
   $entry['tags'][] = $entry['identifier'];
-  unset($entry['type']);
 
   $key = variable_get('log2redis_key', 'logstash');
 
