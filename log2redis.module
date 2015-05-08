@@ -1,0 +1,33 @@
+<?php
+
+/**
+ * Implements hook_watchdog().
+ */
+function log2redis_watchdog(array $entry) {
+  if (!class_exists('Redis_Client')) {
+    return;
+  }
+
+  $redis = Redis_Client::getManager()->getClient();
+
+  if (!($redis instanceof \Predis\Client)) {
+    return;
+  }
+
+  // The user object may not exist in all conditions, so 0 is substituted if needed.
+  $entry['uid'] = isset($entry['user']->uid) ? $entry['user']->uid : 0;
+  $entry['hostname'] = $entry['ip'];
+  $entry['location'] = $entry['request_uri'];
+
+  $entry['identifier'] = variable_get('log2redis_log_identifier', 'drupal');
+
+  $entry['tags'] = [];
+  $entry['tags'][] = $entry['type'];
+  $entry['tags'][] = drupal_html_class($entry['type']);
+  $entry['tags'][] = $entry['identifier'];
+  unset($entry['type']);
+
+  $key = variable_get('log2redis_key', 'logstash');
+
+  $redis->rpush($key, json_encode($entry));
+}

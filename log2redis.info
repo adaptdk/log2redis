@@ -1,0 +1,5 @@
+name = "Log 2 redis"
+description = "A watchdog intergration for logging to redis. without any fancy interface around it."
+core = 7.x
+
+dependencies[] = redis
