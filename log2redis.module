@@ -4,8 +4,30 @@
  * Implements hook_watchdog().
  */
 function log2redis_watchdog(array $entry) {
-  if (!class_exists('Redis_Client')) {
+  static $redis_is_up = NULL;
+  // Return quickly if redis is not up for this request.
+  if ($redis_is_up === FALSE || !class_exists('Redis_Client')) {
     return;
+  }
+
+  // We want to die early if we can't reach the redis server.
+  if ($redis_is_up === NULL) {
+    $host = variable_get('redis_client_host', '127.0.0.2');
+    $port = variable_get('redis_client_port', '6379');
+    $errno = NULL; // Satisfying the pass variables by reference notice.
+    $errstr = NULL; // Satisfying the pass variables by reference notice.
+    $timeout = variable_get('log2redis_client_timeout', 0.1);
+    // We want fsockopen to fail silently!
+    $connection = @fsockopen($host, $port, $errno, $errstr, $timeout);
+    if ($connection === FALSE) {
+      // We expect the redis connection is down for this request.
+      $redis_is_up = FALSE;
+      return;
+    }
+    else {
+      $redis_is_up = TRUE;
+      fclose($connection);
+    }
   }
 
   $redis = Redis_Client::getManager()->getClient();

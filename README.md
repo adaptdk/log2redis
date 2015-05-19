@@ -32,3 +32,10 @@ $conf['log2redis_log_identifier'] = 'yoursolutionsidentifier';
 // Tags start array, which can contain stuff like which environment your logging from etc. (defaults to empty array)
 $conf['log2redis_tags'] = array('production');
 ```
+
+Checks to see if the redis server is up can be tweaked by changing ```log2redis_client_timeout```
+
+```
+// Default is 0.1 seconds timeout.
+$conf['log2redis_client_timeout'] = 0.1; 
+```
